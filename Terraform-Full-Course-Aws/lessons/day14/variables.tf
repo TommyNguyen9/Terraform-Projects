@@ -1,7 +1,11 @@
 variable "aws_region" {
   description = "The AWS region to create resources in."
   type        = string
-  default     = "us-east-1"
+  default     = "eu-west-1"
+}
+
+variable "bucket_name" {
+  default = "TerraformProjects"
 }
 
 variable "bucket_prefix" {

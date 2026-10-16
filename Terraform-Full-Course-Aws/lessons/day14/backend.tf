@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket-piyushsachdeva"
+    bucket = "smoke-terraform-2026"
     key    = "lessons/day14/terraform.tfstate"
-    region = "us-east-1"
+    region = "eu-west-2"
   }
 }
