@@ -1,5 +1,5 @@
 resource aws_s3_bucket "firstbucket" {
-  bucket = var.bucket_name
+  bucket = "${var.bucket_prefix}${var.bucket_name}"
 }
 
 resource "aws_s3_bucket_public_access_block" "block" {
@@ -23,7 +23,7 @@ resource "aws_cloudfront_origin_access_control" "oac" {
 resource "aws_s3_bucket_policy" "allow_cf" {
   bucket = aws_s3_bucket.firstbucket.id
   depends_on = [ aws_s3_bucket_public_access_block.block ]
-  policy = jsonencode({{
+  policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
       {
@@ -44,16 +44,16 @@ resource "aws_s3_bucket_policy" "allow_cf" {
         }
       }
     ]
-  }})
+  })
 }
 
 resource "aws_s3_object" "object" {
 
-  for_each = fileset("${path.module/www}", "**/*")
+  for_each = fileset("${path.module}/www}", "**/*")
   bucket = "aws_s3_bucket.firstbucket.id"
   key    = each.value
-  source = "${path.module/www}/${each.value}"
-  etag = filemd5("${path.module/www}/${each.value}")
+  source = "${path.module}/www/${each.value}"
+  etag = filemd5("${path.module}/www/${each.value}")
      content_type = lookup({
       "html" = "text/html",
       "css"  = "text/css",
@@ -105,7 +105,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     path_pattern     = "/content/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = local.origin_id
 
     forwarded_values {
       query_string = false
@@ -122,22 +122,16 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     viewer_protocol_policy = "redirect-to-https"
   }
 
-  price_class = "PriceClass_200"
+  price_class = "PriceClass_100"
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE"]
+      restriction_type = "none"
     }
   }
 
-  tags = {
-    Environment = "production"
-  }
-
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.my_domain.arn
-    ssl_support_method  = "sni-only"
+    cloudfront_default_certificate = true
   }
 }
 

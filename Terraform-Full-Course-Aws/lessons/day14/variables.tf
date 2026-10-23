@@ -5,7 +5,7 @@ variable "aws_region" {
 }
 
 variable "bucket_name" {
-  default = "TerraformProjects"
+  default = "terraformprojects"
 }
 
 variable "bucket_prefix" {
