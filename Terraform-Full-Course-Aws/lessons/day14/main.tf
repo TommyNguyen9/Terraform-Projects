@@ -20,43 +20,56 @@ resource "aws_cloudfront_origin_access_control" "oac" {
 }
 
 
-resource "aws_s3_bucket_policy" "cf" {
-  bucket = aws_s3_bucket.example.firstbucket.id
-  policy = data.aws_iam_policy_document.allow_access_from_another_account.json
+resource "aws_s3_bucket_policy" "allow_cf" {
+  bucket = aws_s3_bucket.firstbucket.id
+  depends_on = [ aws_s3_bucket_public_access_block.block ]
+  policy = jsonencode({{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "AllowCloudFront",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "cloudfront.amazonaws.com"
+        },
+        "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        "Resource":  "${aws_s3_bucket.firstbucket.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
+          }
+        }
+      }
+    ]
+  }})
 }
 
-policy = jsonencode({{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "Statement1",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "cloudfront.amazonaws.com"
-      },
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Resource": "*"
-    }
-  ]
-}})
+resource "aws_s3_object" "object" {
 
-data "aws_iam_policy_document" "allow_access_from_another_account" {
-  statement {
-    principals {
-      type        = "AWS"
-      identifiers = ["123456789012"]
-    }
-
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-    ]
-
-    resources = [
-      aws_s3_bucket.example.arn,
-      "${aws_s3_bucket.example.arn}/*",
-    ]
-  }
+  for_each = fileset("${path.module/www}", "**/*")
+  bucket = "aws_s3_bucket.firstbucket.id"
+  key    = each.value
+  source = "${path.module/www}/${each.value}"
+  etag = filemd5("${path.module/www}/${each.value}")
+     content_type = lookup({
+      "html" = "text/html",
+      "css"  = "text/css",
+      "js"   = "application/javascript",
+      "json" = "application/json",
+      "png"  = "image/png",
+      "jpg"  = "image/jpeg",
+      "jpeg" = "image/jpeg",
+      "gif"  = "image/gif",
+      "svg"  = "image/svg+xml",
+      "ico"  = "image/x-icon",
+      "txt"  = "text/plain"
+    }, split(".", each.value)[length(split(".", each.value)) - 1], "application/octet-stream")
 }
+
+
+
+
+
