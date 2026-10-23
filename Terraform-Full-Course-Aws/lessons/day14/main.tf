@@ -27,14 +27,13 @@ resource "aws_s3_bucket_policy" "allow_cf" {
     "Version": "2012-10-17",
     "Statement": [
       {
-        "Sid": "AllowCloudFront",
+        "Sid": "AllowCloudFrontServicePrincipal",
         "Effect": "Allow",
         "Principal": {
-          "AWS": "cloudfront.amazonaws.com"
+          "Service": "cloudfront.amazonaws.com"
         },
         "Action": [
-          "s3:GetObject",
-          "s3:ListBucket"
+          "s3:GetObject"
         ],
         "Resource":  "${aws_s3_bucket.firstbucket.arn}/*"
         Condition = {
