@@ -19,7 +19,6 @@ resource "aws_cloudfront_origin_access_control" "oac" {
   signing_protocol                  = "sigv4"
 }
 
-
 resource "aws_s3_bucket_policy" "allow_cf" {
   bucket = aws_s3_bucket.firstbucket.id
   depends_on = [ aws_s3_bucket_public_access_block.block ]
@@ -27,7 +26,7 @@ resource "aws_s3_bucket_policy" "allow_cf" {
     "Version": "2012-10-17",
     "Statement": [
       {
-        "Sid": "AllowCloudFrontServicePrincipal",
+        "Sid": "AllowCloudFront",
         "Effect": "Allow",
         "Principal": {
           "Service": "cloudfront.amazonaws.com"
