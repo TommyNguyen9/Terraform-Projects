@@ -47,3 +47,67 @@ resource "aws_subnet" "secondary_subnet" {
     Environment = "Demo"
   }
 }
+
+resource "aws_internet_gateway" "primary_igw" {
+  provider = aws.Primary
+  vpc_id = aws_vpc.primary_vpc.id
+
+  tags = {
+    Name        = "Primary-IGW-${var.Primary}"
+    Environment = "Demo"
+  }
+}
+
+resource "aws_internet_gateway" "secondary_igw" {
+  provider = aws.Secondary
+  vpc_id = aws_vpc.secondary_vpc.id
+
+  tags = {
+    Name        = "Secondary-IGW-${var.Secondary}"
+    Environment = "Demo"
+  }
+}
+
+# Route table for Primary VPC
+resource "aws_route_table" "primary_rt" {
+  provider = aws.Primary
+  vpc_id   = aws_vpc.primary_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.primary_igw.id
+  }
+
+  tags = {
+    Name        = "Primary-Route-Table"
+    Environment = "Demo"
+  }
+}
+
+# Route table for Secondary VPC
+resource "aws_route_table" "secondary_rt" {
+  provider = aws.Secondary
+  vpc_id   = aws_vpc.secondary_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.secondary_igw.id
+  }
+
+  tags = {
+    Name        = "Secondary-Route-Table"
+    Environment = "Demo"
+  }
+}
+
+resource "aws_route_table_association" "primary_rta" {
+  provider = aws.Primary
+  subnet_id = aws_subnet.primary_subnet.id
+  route_table_id = aws_route_table.primary_rt.id
+}
+
+resource "aws_route_table_association" "secondary_rta" {
+  provider = aws.Secondary
+  subnet_id = aws_subnet.secondary_subnet.id
+  route_table_id = aws_route_table.secondary_rt.id
+}
