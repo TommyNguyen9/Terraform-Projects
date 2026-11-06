@@ -1,7 +1,13 @@
-variable "aws_region" {
+variable "Primary" {
   description = "The AWS region to create resources in."
   type        = string
   default     = "eu-west-1"
+}
+
+variable "Secondary" {
+  description = "The AWS region to create resources in."
+  type        = string
+  default     = "eu-west-3"
 }
 
 variable "bucket_name" {
