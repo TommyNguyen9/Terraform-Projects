@@ -10,13 +10,18 @@ variable "Secondary" {
   default     = "eu-west-3"
 }
 
-variable "bucket_name" {
-  default = "terraformprojects"
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     =  "t3.micro"
 }
 
-variable "bucket_prefix" {
-  description = "Prefix for the S3 bucket name."
-  type        = string
-  default     = "my-static-website-"
+variable "primary_vpc_cidr" {
+  default = "10.0.0.0/16"
 }
+
+variable "secondary_vpc_cidr" {
+  default = "10.0.0.0/16"
+}
+
 
