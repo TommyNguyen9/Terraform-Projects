@@ -38,3 +38,15 @@ variable "secondary_subnet_cidr" {
 
 }
 
+variable "primary_key_name" {
+  description = "Name of the SSH key pair for Primary VPC instance (eu-west-1)"
+  type        = string
+  default     = ""
+}
+
+variable "secondary_key_name" {
+  description = "Name of the SSH key pair for Secondary VPC instance (eu-west-3)"
+  type        = string
+  default     = ""
+}
+
