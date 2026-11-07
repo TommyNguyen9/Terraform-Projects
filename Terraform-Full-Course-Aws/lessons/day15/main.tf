@@ -118,7 +118,7 @@ resource "aws_vpc_peering_connection" "primary_to_secondary" {
   provider    = aws.Primary
   vpc_id      = aws_vpc.primary_vpc.id
   peer_vpc_id = aws_vpc.secondary_vpc.id
-  peer_region = var.secondary_region
+  peer_region = var.Secondary
   auto_accept = false
 
   tags = {
@@ -130,7 +130,7 @@ resource "aws_vpc_peering_connection" "primary_to_secondary" {
 
 resource "aws_vpc_peering_connection_accepter" "secondary_accepter" {
   provider    = aws.Secondary
-  vpc_peering_connection_id = aws_vpc_peering_connection.primary_to_secondary
+  vpc_peering_connection_id = aws_vpc_peering_connection.primary_to_secondary.id
   auto_accept = true
 
   tags = {
@@ -266,7 +266,7 @@ resource "aws_instance" "primary_instance" {
   tags = {
     Name        = "Primary-VPC-Instance"
     Environment = "Demo"
-    Region      = var.primary_region
+    Region      = var.Primary
   }
 
   depends_on = [aws_vpc_peering_connection_accepter.secondary_accepter]
@@ -286,7 +286,7 @@ resource "aws_instance" "secondary_instance" {
   tags = {
     Name        = "Secondary-VPC-Instance"
     Environment = "Demo"
-    Region      = var.secondary_region
+    Region      = var.Secondary
   }
 
   depends_on = [aws_vpc_peering_connection_accepter.secondary_accepter]
