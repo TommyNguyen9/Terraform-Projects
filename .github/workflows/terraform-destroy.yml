@@ -30,6 +30,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: Terraform-Full-Course-Aws/lessons/day27/code
 
     steps:
       - name: Checkout
