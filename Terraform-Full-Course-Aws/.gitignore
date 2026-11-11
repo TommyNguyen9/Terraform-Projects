@@ -5,6 +5,8 @@ docs/
 *.tfstate
 *.tfstate.*
 *.tfvars
+!lessons/day27/code/*.tfvars
+!Terraform-Full-Course-Aws/lessons/day27/code/*.tfvars
 .terraform/
 .terraform.lock.hcl
 crash.log
@@ -33,5 +35,6 @@ ehthumbs.db
 Thumbs.db
 lessons/day15/vpc-peering-demo-east.pem
 
+*:Zone.Identifier
 
 *.pem
