@@ -33,6 +33,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: Terraform-Full-Course-Aws/lessons/day27/code
 
     steps:
       - name: Checkout
@@ -151,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-${{ env.WORKSPACE_NAME }}
-          path: tfplan
+          path: Terraform-Full-Course-Aws/lessons/day27/code/tfplan
 
   terraform-apply:
     name: "Terraform Apply"
@@ -162,6 +163,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: Terraform-Full-Course-Aws/lessons/day27/code
 
     steps:
       - name: Checkout
@@ -198,7 +200,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan-${{ env.WORKSPACE_NAME }}
-          path: .
+          path: Terraform-Full-Course-Aws/lessons/day27/code
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false tfplan
